@@ -1,29 +1,48 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
+import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import remarkGfm from "remark-gfm";
 
 const GeminiChat = () => {
+  const { chatId } = useParams();
+  const [userId, setUserId] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
-  const [chatTitle, setChatTitle] = useState("New Chat");
-  const [chatId, setChatId] = useState(uuidv4());
+  const [chatTitle, setChatTitle] = useState("Loading...");
+  const [isLoading, setIsLoading] = useState(true);
+  const [showMenu, setShowMenu] = useState(false);
   const [formData, setFormData] = useState({
     destination: "",
     places: "",
     budget: "",
     message: "",
   });
-  const [showMenu, setShowMenu] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const userId = "user_123"; // Replace with localStorage.getItem("userId") if available
+  useEffect(() => {
+    const fetchChatData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/chats/${chatId}`,
+          { params: { userId: "user_123" } }
+        );
+        const chatData = response.data[0];
+        setUserId(chatData.userId);
+        setChatHistory(chatData.conversation);
+        setChatTitle(`Trip to ${chatData.destination}`);
+      } catch (error) {
+        console.error("Error fetching chat data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Handles input change for all form fields
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    fetchChatData();
+  }, [chatId]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatHistory, isLoading]);
 
   const getCurrentTime = () =>
     new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -36,11 +55,10 @@ const GeminiChat = () => {
     });
   };
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatHistory, isLoading]);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  // Cleans message text to remove markdown and format bullets
   const cleanText = (text) => {
     return text
       .replace(/```/g, "")
@@ -48,20 +66,17 @@ const GeminiChat = () => {
       .replace(/^[-*]\s+/gm, "• ");
   };
 
-  // Sends message to backend and handles response
   const sendMessage = async (e) => {
     e.preventDefault();
     const { destination, places, budget, message } = formData;
     if (!message.trim()) return;
-
-    const cleanedMessage = cleanText(message);
 
     // Create a unique messageId for the user's message
     const messageId = uuidv4();
 
     const userMessage = {
       sender: "user",
-      text: cleanedMessage,
+      text: message,
       time: getCurrentTime(),
       date: getCurrentDate(),
       messageId,
@@ -72,7 +87,6 @@ const GeminiChat = () => {
     setFormData({ ...formData, message: "" });
     setIsLoading(true);
 
-    // Animate chat title based on destination
     if (chatId && destination.trim()) {
       const fullTitle = `Trip to ${destination}`;
       let i = 0;
@@ -90,7 +104,7 @@ const GeminiChat = () => {
           destination,
           places,
           budget,
-          message: cleanedMessage,
+          message,
           userId,
           messageId, // Send messageId to backend for tracking
         }
@@ -98,7 +112,7 @@ const GeminiChat = () => {
 
       const botMessage = {
         sender: "bot",
-        text: cleanText(data.reply),
+        text: data.reply,
         time: getCurrentTime(),
         date: getCurrentDate(),
         messageId: uuidv4(), // Generate new messageId for bot's message
@@ -114,7 +128,7 @@ const GeminiChat = () => {
         places,
         budget,
         conversation,
-        chatTitle,
+        chatTitle: chatTitle,
       });
 
       if (!chatId && res.data.chatId) {
@@ -218,80 +232,86 @@ const GeminiChat = () => {
 
       {/* Chat Body */}
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
-        {chatHistory.map((msg, idx) => (
-          <div key={msg.messageId || idx}>
-            {renderDateDividers(msg, idx)}
-            <div
-              className={`flex ${
-                msg.sender === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
+        {chatHistory.map((msg, idx) => {
+          const cleanText = msg.text
+            .replace(/```/g, "")
+            .replace(/\\n/g, "\n")
+            .replace(/^[-*]\s+/gm, "• "); // Replace leading - or * with bullet
+
+          return (
+            <div key={idx}>
+              {renderDateDividers(msg, idx)}
               <div
-                className="relative rounded-lg px-3 py-2"
-                style={{
-                  backgroundColor:
-                    msg.sender === "user" ? "#dcf8c6" : "#ffffff",
-                  maxWidth: "65%",
-                  width: "auto",
-                  wordBreak: "break-word",
-                  overflowWrap: "break-word",
-                  whiteSpace: "pre-wrap",
-                }}
+                className={`flex ${
+                  msg.sender === "user" ? "justify-end" : "justify-start"
+                }`}
               >
-                <div className="flex flex-wrap items-end justify-between gap-2">
-                  <span className="text-sm text-black">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        table: (props) => (
-                          <table
-                            style={{
-                              width: "100%",
-                              borderCollapse: "collapse",
-                              marginTop: "10px",
-                              marginBottom: "10px",
-                            }}
-                            {...props}
-                          />
-                        ),
-                        th: (props) => (
-                          <th
-                            style={{
-                              border: "1px solid #ccc",
-                              padding: "8px",
-                              backgroundColor: "#f8f8f8",
-                            }}
-                            {...props}
-                          />
-                        ),
-                        td: (props) => (
-                          <td
-                            style={{
-                              border: "1px solid #ccc",
-                              padding: "8px",
-                            }}
-                            {...props}
-                          />
-                        ),
-                        em: (props) => (
-                          <em style={{ fontStyle: "italic" }} {...props} />
-                        ),
-                        strong: (props) => (
-                          <strong style={{ fontWeight: "bold" }} {...props} />
-                        ),
-                      }}
-                    >
-                      {msg.text}
-                    </ReactMarkdown>
-                  </span>
-                  <span className="text-[10px] text-gray-500 whitespace-nowrap ml-2">
-                    {msg.time} {msg.sender === "user" && <span>✓✓</span>}
-                  </span>
+                <div
+                  className="relative rounded-lg px-3 py-2"
+                  style={{
+                    backgroundColor:
+                      msg.sender === "user" ? "#dcf8c6" : "#ffffff",
+                    maxWidth: "65%",
+                    wordBreak: "break-word",
+                    whiteSpace: "pre-wrap",
+                    padding: "0.5rem",
+                  }}
+                >
+                  <div className="flex flex-wrap items-end justify-between gap-2">
+                    <span className="text-sm text-black">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          table: (props) => (
+                            <table
+                              style={{
+                                width: "100%",
+                                borderCollapse: "collapse",
+                                marginTop: "10px",
+                                marginBottom: "10px",
+                              }}
+                              {...props}
+                            />
+                          ),
+                          th: (props) => (
+                            <th
+                              style={{
+                                border: "1px solid #ccc",
+                                padding: "8px",
+                                backgroundColor: "#f8f8f8",
+                              }}
+                              {...props}
+                            />
+                          ),
+                          td: (props) => (
+                            <td
+                              style={{
+                                border: "1px solid #ccc",
+                                padding: "8px",
+                              }}
+                              {...props}
+                            />
+                          ),
+                          em: (props) => (
+                            <em style={{ fontStyle: "italic" }} {...props} />
+                          ),
+                          strong: (props) => (
+                            <strong style={{ fontWeight: "bold" }} {...props} />
+                          ),
+                        }}
+                      >
+                        {cleanText}
+                      </ReactMarkdown>
+                    </span>
+                    <span className="text-[10px] text-gray-500 whitespace-nowrap ml-2">
+                      {msg.time} {msg.sender === "user" && <span>✓✓</span>}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         {isLoading && renderTypingLoader()}
         <div ref={messagesEndRef} />
       </div>
@@ -329,6 +349,7 @@ const GeminiChat = () => {
             className="flex-1 p-2 rounded-md border border-gray-300"
           />
         </div>
+
         <div className="flex items-center gap-2">
           <input
             type="text"
