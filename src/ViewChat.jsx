@@ -39,7 +39,7 @@ const GeminiChat = () => {
     };
 
     fetchChatData();
-  }, [chatId]);
+  }, []);
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory, isLoading]);
@@ -90,54 +90,108 @@ const GeminiChat = () => {
     if (chatId && destination.trim()) {
       const fullTitle = `Trip to ${destination}`;
       let i = 0;
+
       const titleInterval = setInterval(() => {
         setChatTitle(fullTitle.substring(0, i + 1));
         i++;
         if (i === fullTitle.length) clearInterval(titleInterval);
       }, 50);
-    }
 
-    try {
-      const { data } = await axios.post(
-        "http://localhost:5000/api/gemini/reply",
-        {
+      const animationTime = fullTitle.length * 50;
+
+      setTimeout(async () => {
+        try {
+          const { data } = await axios.post(
+            "http://localhost:5000/api/gemini/reply",
+            {
+              destination,
+              places,
+              budget,
+              message,
+              userId,
+              messageId,
+            }
+          );
+
+          const botMessage = {
+            sender: "bot",
+            text: cleanText(data.reply),
+            time: getCurrentTime(),
+            date: getCurrentDate(),
+            messageId: uuidv4(),
+          };
+
+          const conversation = [...updatedChat, botMessage];
+          setChatHistory(conversation);
+
+          const res = await axios.post(
+            "http://localhost:5000/api/chats/store",
+            {
+              userId,
+              chatId: chatId || undefined,
+              destination,
+              places,
+              budget,
+              conversation,
+              chatTitle: fullTitle,
+            }
+          );
+
+          if (!chatId && res.data.chatId) {
+            setChatId(res.data.chatId);
+          }
+
+          console.log("✅ Chat stored with animated title");
+        } catch (error) {
+          console.error("❌ Error sending message:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }, animationTime + 100); // Buffer after animation
+    } else {
+      // If no animation needed (i.e., no destination or no chatId), just proceed
+      try {
+        const { data } = await axios.post(
+          "http://localhost:5000/api/gemini/reply",
+          {
+            destination,
+            places,
+            budget,
+            message: cleanedMessage,
+            userId,
+            messageId,
+          }
+        );
+
+        const botMessage = {
+          sender: "bot",
+          text: cleanText(data.reply),
+          time: getCurrentTime(),
+          date: getCurrentDate(),
+          messageId: uuidv4(),
+        };
+
+        const conversation = [...updatedChat, botMessage];
+        setChatHistory(conversation);
+
+        const res = await axios.post("http://localhost:5000/api/chats/store", {
+          userId,
+          chatId: chatId || undefined,
           destination,
           places,
           budget,
-          message,
-          userId,
-          messageId, // Send messageId to backend for tracking
+          conversation,
+          chatTitle,
+        });
+
+        if (!chatId && res.data.chatId) {
+          setChatId(res.data.chatId);
         }
-      );
-
-      const botMessage = {
-        sender: "bot",
-        text: data.reply,
-        time: getCurrentTime(),
-        date: getCurrentDate(),
-        messageId: uuidv4(), // Generate new messageId for bot's message
-      };
-
-      const conversation = [...updatedChat, botMessage];
-      setChatHistory(conversation);
-
-      const res = await axios.post("http://localhost:5000/api/chats/store", {
-        userId,
-        chatId: chatId || undefined,
-        destination,
-        places,
-        budget,
-        conversation,
-        chatTitle: chatTitle,
-      });
-
-      if (!chatId && res.data.chatId) {
-        setChatId(res.data.chatId);
+      } catch (error) {
+        console.error("❌ Error sending message:", error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error sending message:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

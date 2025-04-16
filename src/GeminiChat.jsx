@@ -20,7 +20,6 @@ const GeminiChat = () => {
 
   const userId = "user_123"; // Replace with localStorage.getItem("userId") if available
 
-  // Handles input change for all form fields
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -40,7 +39,6 @@ const GeminiChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory, isLoading]);
 
-  // Cleans message text to remove markdown and format bullets
   const cleanText = (text) => {
     return text
       .replace(/```/g, "")
@@ -48,15 +46,12 @@ const GeminiChat = () => {
       .replace(/^[-*]\s+/gm, "• ");
   };
 
-  // Sends message to backend and handles response
   const sendMessage = async (e) => {
     e.preventDefault();
     const { destination, places, budget, message } = formData;
     if (!message.trim()) return;
 
     const cleanedMessage = cleanText(message);
-
-    // Create a unique messageId for the user's message
     const messageId = uuidv4();
 
     const userMessage = {
@@ -72,58 +67,111 @@ const GeminiChat = () => {
     setFormData({ ...formData, message: "" });
     setIsLoading(true);
 
-    // Animate chat title based on destination
     if (chatId && destination.trim()) {
       const fullTitle = `Trip to ${destination}`;
       let i = 0;
+
       const titleInterval = setInterval(() => {
         setChatTitle(fullTitle.substring(0, i + 1));
         i++;
         if (i === fullTitle.length) clearInterval(titleInterval);
       }, 50);
-    }
 
-    try {
-      const { data } = await axios.post(
-        "http://localhost:5000/api/gemini/reply",
-        {
+      const animationTime = fullTitle.length * 50;
+
+      setTimeout(async () => {
+        try {
+          const { data } = await axios.post(
+            "http://localhost:5000/api/gemini/reply",
+            {
+              destination,
+              places,
+              budget,
+              message: cleanedMessage,
+              userId,
+              messageId,
+            }
+          );
+
+          const botMessage = {
+            sender: "bot",
+            text: cleanText(data.reply),
+            time: getCurrentTime(),
+            date: getCurrentDate(),
+            messageId: uuidv4(),
+          };
+
+          const conversation = [...updatedChat, botMessage];
+          setChatHistory(conversation);
+
+          const res = await axios.post(
+            "http://localhost:5000/api/chats/store",
+            {
+              userId,
+              chatId: chatId || undefined,
+              destination,
+              places,
+              budget,
+              conversation,
+              chatTitle: fullTitle,
+            }
+          );
+
+          if (!chatId && res.data.chatId) {
+            setChatId(res.data.chatId);
+          }
+
+          console.log("✅ Chat stored with animated title");
+        } catch (error) {
+          console.error("❌ Error sending message:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }, animationTime + 100); // Buffer after animation
+    } else {
+      // If no animation needed (i.e., no destination or no chatId), just proceed
+      try {
+        const { data } = await axios.post(
+          "http://localhost:5000/api/gemini/reply",
+          {
+            destination,
+            places,
+            budget,
+            message: cleanedMessage,
+            userId,
+            messageId,
+          }
+        );
+
+        const botMessage = {
+          sender: "bot",
+          text: cleanText(data.reply),
+          time: getCurrentTime(),
+          date: getCurrentDate(),
+          messageId: uuidv4(),
+        };
+
+        const conversation = [...updatedChat, botMessage];
+        setChatHistory(conversation);
+
+        const res = await axios.post("http://localhost:5000/api/chats/store", {
+          userId,
+          chatId: chatId || undefined,
           destination,
           places,
           budget,
-          message: cleanedMessage,
-          userId,
-          messageId, // Send messageId to backend for tracking
+          conversation,
+          chatTitle,
+        });
+
+        if (!chatId && res.data.chatId) {
+          setChatId(res.data.chatId);
         }
-      );
-
-      const botMessage = {
-        sender: "bot",
-        text: cleanText(data.reply),
-        time: getCurrentTime(),
-        date: getCurrentDate(),
-        messageId: uuidv4(), // Generate new messageId for bot's message
-      };
-
-      const conversation = [...updatedChat, botMessage];
-      setChatHistory(conversation);
-
-      const res = await axios.post("http://localhost:5000/api/chats/store", {
-        userId,
-        chatId: chatId || undefined,
-        destination,
-        places,
-        budget,
-        conversation,
-        chatTitle,
-      });
-
-      if (!chatId && res.data.chatId) {
-        setChatId(res.data.chatId);
+      } catch (error) {
+        console.error("❌ Error sending message:", error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error sending message:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -143,10 +191,8 @@ const GeminiChat = () => {
       const today = new Date();
       const messageDate = new Date(msg.date);
 
-      // Check if it's today
       const isToday = messageDate.toDateString() === today.toDateString();
 
-      // Check if it's yesterday
       const yesterday = new Date();
       yesterday.setDate(today.getDate() - 1);
       const isYesterday =
@@ -178,8 +224,7 @@ const GeminiChat = () => {
   );
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-[url('/travelbg.jpg')] bg-cover bg-center m-0">
-      {/* Navbar */}
+    <div className="flex flex-col h-screen w-screen bg-[url('/travelbg.jpg')] bg-cover bg-center m-0 font-helvetica">
       <div className="bg-green-600 text-white p-3 flex justify-between items-center shadow-md">
         <h2 className="text-lg font-bold transition-all duration-500">
           {chatTitle}
@@ -216,7 +261,6 @@ const GeminiChat = () => {
         </div>
       </div>
 
-      {/* Chat Body */}
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
         {chatHistory.map((msg, idx) => (
           <div key={msg.messageId || idx}>
@@ -296,7 +340,6 @@ const GeminiChat = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Chat Form */}
       <form
         onSubmit={sendMessage}
         className="bg-white border-t border-gray-300 p-3 flex flex-col gap-2"
@@ -333,14 +376,16 @@ const GeminiChat = () => {
           <input
             type="text"
             name="message"
-            placeholder="Type your travel question..."
+            placeholder="Ask about your trip..."
             value={formData.message}
             onChange={handleChange}
-            className="flex-1 p-3 rounded-full border border-gray-300"
+            className="flex-1 p-2 rounded-md border border-gray-300"
+            required
           />
           <button
             type="submit"
-            className="bg-green-500 text-white rounded-full px-5 py-2 hover:bg-green-600"
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+            disabled={isLoading}
           >
             Send
           </button>
