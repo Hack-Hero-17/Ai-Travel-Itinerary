@@ -25,37 +25,74 @@ const ExpenseList=({expenses,onRemove,onEdit})=>{
     }
 
     return(
-    <div className='expense-list'>
-        {expenses.length===0 ?
-        (<p>No Expenses Yet!!!</p>):
-        (expenses.map((ex)=>
-        editId==ex.id ? 
-        (<div key={ex.id} className="expense-item">
-            <input type="text" name="title" value={editData.title} onChange={handleEdit} placeholder="Title"/>
-            <input type="number" name="amount" value={editData.amount} onChange={handleEdit} placeholder="Amount"/>
-            <input type="date" name="date" value={editData.date} onChange={handleEdit}/>
-            <select name="category" value={editData.category} onChange={handleEdit}>
-              <option value="">Select Category</option>
-              <option value="Transport">Transport</option>
-              <option value="Food">Food</option>
-              <option value="Accommodation">Accommodation</option>
-              <option value="Other">Other</option>
-            </select>
-            <input type="text" name="place" value={editData.place} onChange={handleEdit} placeholder="Place"/>
-            <button onClick={saveEdit}>Save</button>
-            <button onClick={cancelEdit}>Cancel</button>
-          </div>):
-          (<div key={ex.id} className="expense-item">
-              <h3>{ex.title}</h3>
-              <p>Amount: ${ex.amount.toFixed(2)}</p>
-              <p>Category: {ex.category}</p>
-              <p>Place: {ex.place}</p>
-              <p>Date: {new Date(ex.date).toLocaleDateString()}</p>
-              <button className="edit-btn" onClick={() => startEdit(ex)}>Edit</button>
-              <button className="cancel-btn" onClick={() => onRemove(ex.id)}>Remove</button>
-            </div>
-        )))}
-    </div>
+        <div className="expense-list">
+        {expenses.length === 0 ? (
+          <p>No Expenses Yet!!!</p>
+        ) : (
+          <table className="expense-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Place</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {expenses.map((ex) =>
+                editId === ex.id ? (
+                  <tr key={ex.id}>
+                    <td>
+                      <input type="text" name="title" value={editData.title} onChange={handleEdit} placeholder="Title"/>
+                    </td>
+                    <td>
+                      <input type="number" name="amount" value={editData.amount} onChange={handleEdit} placeholder="Amount" />
+                    </td>
+                    <td>
+                      <select name="category" value={editData.category} onChange={handleEdit}>
+                        <option value="">Select Category</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Food">Food</option>
+                        <option value="Accommodation">Accommodation</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input type="text" name="place" value={editData.place} onChange={handleEdit} placeholder="Place" />
+                    </td>
+                    <td>
+                      <input type="date" name="date" value={editData.date} onChange={handleEdit} />
+                    </td>
+                    <td>
+                      <button className="save-btn" onClick={saveEdit}>Save</button>
+                      <button className="cancel-btn" onClick={cancelEdit}>Cancel</button>
+                    </td>
+                  </tr>
+                ) : (
+                  <tr key={ex.id}>
+                    <td>{ex.title}</td>
+                    <td>₹{ex.amount.toFixed(2)}</td>
+                    <td>{ex.category}</td>
+                    <td>{ex.place}</td>
+                    <td>{new Date(ex.date).toLocaleDateString()}</td>
+                    <td>
+                      <button className="edit-btn" onClick={() => startEdit(ex)}>
+                        Edit
+                      </button>
+                      <button className="remove-btn" onClick={() => onRemove(ex.id)}>
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                )
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+      
     );
 };
 
