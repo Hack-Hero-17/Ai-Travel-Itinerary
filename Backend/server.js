@@ -169,8 +169,10 @@ app.post("/api/chats/store", async (req, res) => {
 });
 
 // Get chat summaries with chatId and chatTitle
+
 app.get("/api/chats/recent", async (req, res) => {
   const { userId, skip = 0, limit = 10 } = req.query;
+
 
   if (!userId) return res.status(400).json({ message: "Missing userId" });
 
@@ -193,6 +195,7 @@ app.get("/api/chats/recent", async (req, res) => {
     res.json(chats);
   } catch (err) {
     console.error("Error fetching chat summaries:", err);
+
     res.status(500).json({ message: "Failed to fetch chat summaries" });
   }
 });

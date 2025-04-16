@@ -40,6 +40,7 @@ const GeminiChat = () => {
 
     fetchChatData();
   }, []);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory, isLoading]);
@@ -90,7 +91,6 @@ const GeminiChat = () => {
     if (chatId && destination.trim()) {
       const fullTitle = `Trip to ${destination}`;
       let i = 0;
-
       const titleInterval = setInterval(() => {
         setChatTitle(fullTitle.substring(0, i + 1));
         i++;

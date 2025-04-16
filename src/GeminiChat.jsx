@@ -20,6 +20,8 @@ const GeminiChat = () => {
 
   const userId = "user_123"; // Replace with localStorage.getItem("userId") if available
 
+  // Handles input change for all form fields
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -39,6 +41,7 @@ const GeminiChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory, isLoading]);
 
+  // Cleans message text to remove markdown and format bullets
   const cleanText = (text) => {
     return text
       .replace(/```/g, "")
@@ -46,12 +49,15 @@ const GeminiChat = () => {
       .replace(/^[-*]\s+/gm, "• ");
   };
 
+  // Sends message to backend and handles response
   const sendMessage = async (e) => {
     e.preventDefault();
     const { destination, places, budget, message } = formData;
     if (!message.trim()) return;
 
     const cleanedMessage = cleanText(message);
+
+    // Create a unique messageId for the user's message
     const messageId = uuidv4();
 
     const userMessage = {
@@ -192,7 +198,6 @@ const GeminiChat = () => {
       const messageDate = new Date(msg.date);
 
       const isToday = messageDate.toDateString() === today.toDateString();
-
       const yesterday = new Date();
       yesterday.setDate(today.getDate() - 1);
       const isYesterday =
@@ -386,6 +391,7 @@ const GeminiChat = () => {
             type="submit"
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
             disabled={isLoading}
+
           >
             Send
           </button>
