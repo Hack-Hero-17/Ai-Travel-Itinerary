@@ -43,4 +43,4 @@ const ExpenseForm=({onAddExpense})=>{
     )
 }
 
-export default ExpenseForm
+export default ExpenseForm;
