@@ -169,8 +169,10 @@ app.post("/api/chats/store", async (req, res) => {
 });
 
 // Get chat summaries with chatId and chatTitle
-app.get("/api/chats/summary", async (req, res) => {
-  const { userId } = req.query;
+
+app.get("/api/chats/recent", async (req, res) => {
+  const { userId, skip = 0, limit = 10 } = req.query;
+
 
   if (!userId) return res.status(400).json({ message: "Missing userId" });
 
@@ -179,18 +181,21 @@ app.get("/api/chats/summary", async (req, res) => {
       { userId },
       {
         _id: 1,
-        chatId, // Include chatId
-        chatTitle: 1, // Include chatTitle
+        chatId: 1,
+        chatTitle: 1,
+        destination: 1,
         createdAt: 1,
-        conversation: { $slice: 1 },
+        conversation: { $slice: -6 }, // last 2 messages
       }
     )
       .sort({ createdAt: -1 })
-      .limit(20);
+      .skip(Number(skip))
+      .limit(Number(limit));
 
     res.json(chats);
   } catch (err) {
-    console.error("Error fetching summaries:", err);
+    console.error("Error fetching chat summaries:", err);
+
     res.status(500).json({ message: "Failed to fetch chat summaries" });
   }
 });
