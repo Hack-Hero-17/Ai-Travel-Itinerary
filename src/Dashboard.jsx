@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
@@ -23,7 +22,6 @@ const Dashboard = () => {
       });
 
       if (res.data.length < limit) setHasMore(false);
-
       setChats((prev) => [...prev, ...res.data]);
       setSkip((prev) => prev + limit);
     } catch (err) {
@@ -51,19 +49,17 @@ const Dashboard = () => {
 
   useEffect(() => {
     const container = chatContainerRef.current;
-
-    // Check if the container is available before accessing scrollHeight
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
   }, [chats]);
 
   return (
-    <div className="relative min-h-screen bg-white pb-24 font-sans bg-gray-50">
+    <div className="relative min-h-screen bg-gray-50 pb-24 font-sans">
       {/* Top Navbar */}
       <div className="bg-white text-black p-4 shadow-md flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <img src={logo} alt="Logoipsum" className="w-10 h-8" />
+          <img src={logo} alt="Logo" className="w-10 h-8" />
           <h1 className="text-xl font-bold font-helvetica">
             AI Travel Itinerary
           </h1>
@@ -78,20 +74,21 @@ const Dashboard = () => {
         <h1 className="text-3xl font-extrabold text-[50px] text-[#f56551] font-helvetica">
           Discover Your Next Adventure with AI:
         </h1>
-        <h2 className="pt-[10px] mt-2 text-2xl font-extrabold text-[40px] font-helvetica">
+        <h2 className="pt-4 mt-2 text-2xl font-extrabold text-[40px] font-helvetica">
           Personalized Itineraries at Your Fingertips
         </h2>
-        <p className="mt-4 pt-[1rem] text-gray-600 max-w-2xl mx-auto text-[20px] font-helvetica">
+        <p className="mt-4 pt-4 text-gray-600 max-w-2xl mx-auto text-[20px] font-helvetica">
           Your personal trip planner and travel curator, creating custom
           itineraries tailored to your interests and budget.
         </p>
       </div>
 
-      {/* Chat Section */}
+      {/* Recent Chats Section */}
       <h2 className="text-2xl font-bold font-helvetica text-center mb-4">
         Your Recent Chats
       </h2>
-      <div className="p-5 bg-gray-100 min-h-[300px] flex flex-col items-center">
+
+      <div className="bg-gray-100 px-4 py-6 min-h-[300px] w-full overflow-x-auto">
         {loading && chats.length === 0 ? (
           <p className="text-center text-gray-500">Loading...</p>
         ) : chats.length === 0 ? (
@@ -103,29 +100,20 @@ const Dashboard = () => {
           <div
             ref={chatContainerRef}
             onScroll={handleScroll}
-            className="flex overflow-x-auto space-x-4 py-4"
+            className="flex gap-4 w-max"
           >
             {chats.map((chat) => (
               <Link
                 key={chat.chatId}
                 to={`/chat/${chat.chatId}`}
-                className="min-w-[200px] bg-white border rounded-lg shadow-md p-4 hover:shadow-lg transition"
+                className="min-w-[250px] max-w-[250px] bg-white border rounded-lg shadow-md p-4 hover:shadow-lg transition"
               >
                 <h3 className="font-semibold text-lg">{chat.chatTitle}</h3>
                 <p className="text-sm text-gray-600">{chat.destination}</p>
-                <div
-                  className="flex flex-col gap-2 mt-4 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar"
-                  ref={chatContainerRef}
-                >
-                  {/* WhatsApp-style time divider */}
+                <div className="flex flex-col gap-2 mt-4 max-h-[180px] overflow-y-auto pr-1">
                   <div className="self-center text-xs font-medium text-gray-500 py-1 px-2 bg-gray-200 rounded-md my-2">
-                    {(() => {
-                      const lastDate = "Recent Messages";
-                      return lastDate;
-                    })()}
+                    Recent Messages
                   </div>
-
-                  {/* Render recent 6 messages in bubbles */}
                   {chat.conversation.slice(-6).map((msg) => (
                     <div
                       key={msg.messageId}
@@ -151,7 +139,7 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Create Button */}
+      {/* Floating Create Button */}
       <button
         onClick={() => navigate("/new")}
         className="fixed bottom-5 right-5 flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-white rounded-xl shadow hover:bg-[#1f1f1f] transition"

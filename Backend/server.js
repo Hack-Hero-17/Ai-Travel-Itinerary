@@ -8,9 +8,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// mongoose.set("debug", true);
+
 const PORT = process.env.PORT || 5000;
-const MONGO_URI =
-  "mongodb+srv://vijayalakshmihariuma:KZgGotlVA5RmruHD@cluster1.gckzxwj.mongodb.net/Ai_Travel_Itinerary?appName=Cluster1";
+const MONGO_URI = "mongodb://127.0.0.1:27017/testdb";
+
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const genAI = new GoogleGenerativeAI("AIzaSyCLjMUX-hqIdmqsS5WP1LIS-4slLj3V6oc");
@@ -18,7 +20,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 // MongoDB setup
 mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB error:", err));
 
@@ -172,7 +174,6 @@ app.post("/api/chats/store", async (req, res) => {
 
 app.get("/api/chats/recent", async (req, res) => {
   const { userId, skip = 0, limit = 10 } = req.query;
-
 
   if (!userId) return res.status(400).json({ message: "Missing userId" });
 
