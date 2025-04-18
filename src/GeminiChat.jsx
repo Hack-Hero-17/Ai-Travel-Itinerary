@@ -18,7 +18,12 @@ const GeminiChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const userId = "user_123"; // Replace with localStorage.getItem("userId") if available
+  var userId;
+  if (localStorage.getItem("userId")) {
+    userId = localStorage.getItem("userId");
+  } else {
+    userId = sessionStorage.getItem("userId");
+  } // Replace with localStorage.getItem("userId") if available
 
   // Handles input change for all form fields
 
@@ -26,6 +31,7 @@ const GeminiChat = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  console.log("UserId : ", userId);
   const getCurrentTime = () =>
     new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
@@ -391,7 +397,6 @@ const GeminiChat = () => {
             type="submit"
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
             disabled={isLoading}
-
           >
             Send
           </button>

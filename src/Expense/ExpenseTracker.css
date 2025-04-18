@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Helvetica:wght@300;400;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Helvetica:wght@300;400;600&display=swap");
 
 /* General Body Styles */
-body {
-  font-family: 'Helvetica';
+.body {
+  font-family: "Helvetica";
   background: #eee;
   color: #fff;
   margin: 0;
@@ -13,22 +13,31 @@ body {
   min-height: 100vh;
   box-sizing: border-box;
 }
-h1{
+.h1 {
+  font-family: "Helvetica";
+  background: #eee;
   text-align: center;
-  margin-bottom: 25px;   
-  font-size: 2.5rem;  
-  color: black;  
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 15px;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: black;
 }
 
 /* Container for the Layout */
 .container {
+  font-family: "Helvetica";
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
   align-items: flex-start;
   width: 90%;
-  max-width: 1400px; 
+  max-width: 1400px;
   margin-left: 8%;
 }
 
@@ -44,13 +53,13 @@ h1{
 
 /* Right Section: Budget Tracker */
 .right-section {
-  flex: 1.5; 
-  max-width: 750px; 
+  flex: 1.5;
+  max-width: 750px;
   box-sizing: border-box;
 }
 
 /* Form Container */
-form {
+.form {
   background: #ffffff;
   color: #333;
   padding: 20px;
@@ -61,9 +70,9 @@ form {
   box-sizing: border-box;
 }
 
-form input,
-form select,
-form button {
+.form input,
+.form select,
+.form button {
   display: block;
   width: 100%;
   margin-bottom: 15px;
@@ -74,14 +83,14 @@ form button {
   box-sizing: border-box;
 }
 
-form input:focus,
-form select:focus {
+.form input:focus,
+.form select:focus {
   outline: none;
   border-color: #6a11cb;
   box-shadow: 0 0 8px rgba(106, 17, 203, 0.4);
 }
 
-form button {
+.form button {
   background: #f56551;
   color: white;
   border: none;
@@ -90,7 +99,7 @@ form button {
   padding: 12px;
 }
 
-form button:hover {
+.form button:hover {
   background: #2575fc;
   transform: scale(1.05);
 }
@@ -105,7 +114,7 @@ form button:hover {
   overflow: auto;
   max-height: 400px;
 }
-.expense-list p{
+.expense-list p {
   color: chocolate;
 }
 
@@ -119,7 +128,7 @@ form button:hover {
 
 .expense-table th,
 .expense-table td {
-  text-align: center; 
+  text-align: center;
   padding: 12px;
   border: 1px solid #ddd;
 }
@@ -138,11 +147,12 @@ form button:hover {
 }
 
 .expense-table td > div {
-  display: flex; 
+  display: flex;
   justify-content: center;
   gap: 10px;
 }
-.expense-table input, .expense-table select{
+.expense-table input,
+.expense-table select {
   display: block;
   width: 120px;
   max-width: 250px;
@@ -152,12 +162,11 @@ form button:hover {
   border: 1px solid #ccc;
   font-size: 16px;
   box-sizing: border-box;
-  
 }
 
 /* Button Colors */
 .edit-btn {
-  background: #007bff; 
+  background: #007bff;
   color: white;
   border: none;
   border-radius: 6px;
@@ -167,7 +176,7 @@ form button:hover {
 }
 
 .cancel-btn {
-  background: #6c757d; 
+  background: #6c757d;
   color: white;
   border: none;
   border-radius: 6px;
@@ -178,7 +187,7 @@ form button:hover {
 }
 
 .save-btn {
-  background: #28a745; 
+  background: #28a745;
   color: white;
   border: none;
   border-radius: 6px;
@@ -188,7 +197,7 @@ form button:hover {
 }
 
 .remove-btn {
-  background: #dc3545; 
+  background: #dc3545;
   color: white;
   border: none;
   border-radius: 6px;
@@ -212,7 +221,7 @@ button:hover {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   text-align: center;
   animation: zoomIn 0.7s ease;
-  width: 100%; 
+  width: 100%;
 }
 
 .budget-tracker input {
@@ -232,50 +241,50 @@ button:hover {
 /* Animations */
 @keyframes fadeIn {
   from {
-      opacity: 0;
-      transform: translateY(10px);
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
-      opacity: 1;
-      transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes slideUp {
   from {
-      opacity: 0;
-      transform: translateY(20px);
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
-      opacity: 1;
-      transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes zoomIn {
   from {
-      transform: scale(0.9);
-      opacity: 0;
+    transform: scale(0.9);
+    opacity: 0;
   }
   to {
-      transform: scale(1);
-      opacity: 1;
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {
-      flex-direction: column;
-      align-items: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .left-section,
   .right-section {
-      max-width: 100%;
+    max-width: 100%;
   }
 
   .budget-tracker input {
-      width: 100%;
+    width: 100%;
   }
 }

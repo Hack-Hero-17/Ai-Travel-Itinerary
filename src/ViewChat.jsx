@@ -20,12 +20,27 @@ const GeminiChat = () => {
   });
   const messagesEndRef = useRef(null);
 
+  // if (localStorage.getItem("userId")) {
+  //   setUserId(localStorage.getItem("userId"));
+  // } else {
+  //   setUserId(sessionStorage.getItem("userId"));
+  // }
+
   useEffect(() => {
+    const userId =
+      sessionStorage.getItem("userId") || localStorage.getItem("userId");
+    if (!userId) {
+      console.error("No user ID found!");
+      return;
+    }
+
     const fetchChatData = async () => {
       try {
         const response = await axios.get(
           `http://localhost:5000/api/chats/${chatId}`,
-          { params: { userId: "user_123" } }
+          {
+            params: { userId },
+          }
         );
         const chatData = response.data[0];
         setUserId(chatData.userId);
@@ -39,7 +54,7 @@ const GeminiChat = () => {
     };
 
     fetchChatData();
-  }, []);
+  }, [chatId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

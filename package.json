@@ -12,9 +12,11 @@
   "dependencies": {
     "@tailwindcss/line-clamp": "^0.4.4",
     "axios": "^1.8.4",
+    "bcryptjs": "^3.0.2",
     "cores": "^0.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "firebase": "^11.6.0",
     "lucide-react": "^0.488.0",
     "mongoose": "^8.13.2",
     "react": "^19.0.0",
