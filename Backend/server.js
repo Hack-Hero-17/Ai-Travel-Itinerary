@@ -13,8 +13,11 @@ app.use("/api/expenses", expenseRoutes);
 const User = require("./models/User");
 // const router = express.Router();
 
+// mongoose.set("debug", true);
+
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = "mongodb://127.0.0.1:27017/testdb";
+
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const genAI = new GoogleGenerativeAI("AIzaSyCLjMUX-hqIdmqsS5WP1LIS-4slLj3V6oc");
@@ -22,7 +25,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 // MongoDB setup
 mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB error:", err));
 

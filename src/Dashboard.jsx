@@ -27,7 +27,6 @@ const Dashboard = () => {
       });
 
       if (res.data.length < limit) setHasMore(false);
-
       setChats((prev) => [...prev, ...res.data]);
       setSkip((prev) => prev + limit);
     } catch (err) {
@@ -90,7 +89,7 @@ const Dashboard = () => {
   }, [chats]);
 
   return (
-    <div className="relative min-h-screen bg-white pb-24 font-sans bg-gray-50">
+    <div className="relative min-h-screen bg-gray-50 pb-24 font-sans">
       {/* Top Navbar */}
       <div className="sticky top-0 z-50 bg-white text-black p-4 shadow-md flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -150,10 +149,10 @@ const Dashboard = () => {
         <h1 className="text-3xl font-extrabold text-[50px] text-[#f56551] font-helvetica">
           Discover Your Next Adventure with AI:
         </h1>
-        <h2 className="pt-[10px] mt-2 text-2xl font-extrabold text-[40px] font-helvetica">
+        <h2 className="pt-4 mt-2 text-2xl font-extrabold text-[40px] font-helvetica">
           Personalized Itineraries at Your Fingertips
         </h2>
-        <p className="mt-4 pt-[1rem] text-gray-600 max-w-2xl mx-auto text-[20px] font-helvetica">
+        <p className="mt-4 pt-4 text-gray-600 max-w-2xl mx-auto text-[20px] font-helvetica">
           Your personal trip planner and travel curator, creating custom
           itineraries tailored to your interests and budget.
         </p>
