@@ -18,6 +18,7 @@ import { v4 as uuidv4 } from "uuid";
 
 function SignUpPage() {
   const [email, setEmail] = useState("");
+  const [uname, setUname] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false); // ✅ Loading state
   const Navigate = useNavigate();
@@ -43,10 +44,12 @@ function SignUpPage() {
       await sendEmailVerification(user);
 
       const userDetails = {
+        username: uname,
         userId: user.uid,
         email: user.email,
         password: hashedPassword,
         registrationTime: new Date().toISOString(),
+        profileImage: "",
       };
 
       await axios.post("http://localhost:5000/api/user/signup", userDetails);
@@ -70,11 +73,13 @@ function SignUpPage() {
       const user = result.user;
 
       const userDetails = {
+        username: user.email.split("@")[0],
         userId: user.uid,
         email: user.email,
         password: hashedPassword,
         registrationTime: new Date().toISOString(),
         provider: "google",
+        profileImage: user.photoURL || "",
       };
 
       await axios.post("http://localhost:5000/api/user/signup", userDetails);
@@ -94,11 +99,13 @@ function SignUpPage() {
       const user = result.user;
 
       const userDetails = {
+        username: user.email.split("@")[0], // Use email prefix as username
         userId: user.uid,
         email: user.email,
         password: hashedPassword,
         registrationTime: new Date().toISOString(),
         provider: "github",
+        profileImage: user.photoURL || "",
       };
 
       await axios.post("http://localhost:5000/api/user/signup", userDetails);
@@ -130,6 +137,8 @@ function SignUpPage() {
                 type="text"
                 placeholder="username"
                 required
+                value={uname}
+                onChange={(e) => setUname(e.target.value)}
               />
             </div>
             <div className={styles["input-field"]}>

@@ -57,7 +57,6 @@ const ExpenseList = ({ expenses, onRemove, onEdit }) => {
             {expenses.map((ex) =>
               editId === ex._id ? ( // Use _id here
                 <tr key={ex._id}>
-                  {" "}
                   {/* Use _id as the key */}
                   <td>
                     <input
@@ -118,7 +117,6 @@ const ExpenseList = ({ expenses, onRemove, onEdit }) => {
                 </tr>
               ) : (
                 <tr key={ex._id}>
-                  {/* {" "} */}
                   {/* Use _id as the key */}
                   <td>{ex.title}</td>
                   <td>₹{ex.amount.toFixed(2)}</td>

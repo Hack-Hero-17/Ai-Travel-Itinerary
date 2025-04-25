@@ -239,20 +239,31 @@ app.post("/api/chats/delete", async (req, res) => {
 });
 
 app.post("/api/user/signup", async (req, res) => {
-  const { userId, email, password, registrationTime } = req.body;
+  const {
+    userId,
+    username,
+    email,
+    password,
+    profileImage,
+    registrationTime,
+    provider,
+  } = req.body;
 
   try {
     // Check for missing fields
-    if (!userId || !email || !password || !registrationTime) {
+    if (!userId || !username || !email || !password || !registrationTime) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     // Save the user data to the database, including the hashed password
     const newUser = new User({
       userId,
+      username,
       email,
       password, // Save the hashed password (already hashed from frontend)
+      profileImage,
       registrationTime,
+      provider,
     });
 
     await newUser.save();
@@ -285,6 +296,29 @@ app.post("/api/user/login", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Failed to log in" });
   }
+});
+
+// GET /api/users/:userId
+app.get("/api/users/:userId", async (req, res) => {
+  const { userId } = req.params;
+  const user = await User.findOne({ userId });
+  if (!user) return res.status(404).json({ error: "User not found" });
+  res.json(user);
+});
+
+// PUT /api/users/:userId/profile-image
+app.put("/api/users/:userId/profile-image", async (req, res) => {
+  const { userId } = req.params;
+  const { image } = req.body;
+
+  const user = await User.findOneAndUpdate(
+    { userId },
+    { profileImage: image },
+    { new: true }
+  );
+
+  if (!user) return res.status(404).json({ error: "User not found" });
+  res.json(user);
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

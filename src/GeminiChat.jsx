@@ -3,6 +3,8 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
 import remarkGfm from "remark-gfm";
+import { useNavigate } from "react-router-dom"; // ← added
+import { ArrowLeft } from "lucide-react";
 
 const GeminiChat = () => {
   const [chatHistory, setChatHistory] = useState([]);
@@ -17,21 +19,19 @@ const GeminiChat = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate(); // ← added
 
   var userId;
   if (localStorage.getItem("userId")) {
     userId = localStorage.getItem("userId");
   } else {
     userId = sessionStorage.getItem("userId");
-  } // Replace with localStorage.getItem("userId") if available
-
-  // Handles input change for all form fields
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  console.log("UserId : ", userId);
   const getCurrentTime = () =>
     new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
@@ -47,7 +47,6 @@ const GeminiChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory, isLoading]);
 
-  // Cleans message text to remove markdown and format bullets
   const cleanText = (text) => {
     return text
       .replace(/```/g, "")
@@ -55,15 +54,12 @@ const GeminiChat = () => {
       .replace(/^[-*]\s+/gm, "• ");
   };
 
-  // Sends message to backend and handles response
   const sendMessage = async (e) => {
     e.preventDefault();
     const { destination, places, budget, message } = formData;
     if (!message.trim()) return;
 
     const cleanedMessage = cleanText(message);
-
-    // Create a unique messageId for the user's message
     const messageId = uuidv4();
 
     const userMessage = {
@@ -132,16 +128,13 @@ const GeminiChat = () => {
           if (!chatId && res.data.chatId) {
             setChatId(res.data.chatId);
           }
-
-          console.log("✅ Chat stored with animated title");
         } catch (error) {
           console.error("❌ Error sending message:", error);
         } finally {
           setIsLoading(false);
         }
-      }, animationTime + 100); // Buffer after animation
+      }, animationTime + 100);
     } else {
-      // If no animation needed (i.e., no destination or no chatId), just proceed
       try {
         const { data } = await axios.post(
           "http://localhost:5000/api/gemini/reply",
@@ -202,13 +195,11 @@ const GeminiChat = () => {
     if (!prev || prev.date !== msg.date) {
       const today = new Date();
       const messageDate = new Date(msg.date);
-
       const isToday = messageDate.toDateString() === today.toDateString();
       const yesterday = new Date();
       yesterday.setDate(today.getDate() - 1);
       const isYesterday =
         messageDate.toDateString() === yesterday.toDateString();
-
       const label = isToday ? "Today" : isYesterday ? "Yesterday" : msg.date;
 
       return (
@@ -237,9 +228,19 @@ const GeminiChat = () => {
   return (
     <div className="flex flex-col h-screen w-screen bg-[url('/travelbg.jpg')] bg-cover bg-center m-0 font-helvetica">
       <div className="bg-green-600 text-white p-3 flex justify-between items-center shadow-md">
-        <h2 className="text-lg font-bold transition-all duration-500">
-          {chatTitle}
-        </h2>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/")}
+            className="text-white hover:scale-110 transition-transform duration-200 p-1"
+          >
+            <ArrowLeft size={25} strokeWidth={2.0} />
+          </button>
+
+          <h2 className="text-lg font-bold transition-all duration-500">
+            {chatTitle}
+          </h2>
+        </div>
+
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}

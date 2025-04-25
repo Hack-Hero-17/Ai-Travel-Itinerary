@@ -4,6 +4,8 @@ import ReactMarkdown from "react-markdown";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import remarkGfm from "remark-gfm";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const GeminiChat = () => {
   const { chatId } = useParams();
@@ -19,6 +21,7 @@ const GeminiChat = () => {
     message: "",
   });
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
   // if (localStorage.getItem("userId")) {
   //   setUserId(localStorage.getItem("userId"));
@@ -261,12 +264,20 @@ const GeminiChat = () => {
   );
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-[url('/travelbg.jpg')] bg-cover bg-center m-0">
+    <div className="flex flex-col h-screen w-screen bg-[url('/travelbg.jpg')] bg-cover bg-center m-0 font-helvetica">
       {/* Navbar */}
       <div className="bg-green-600 text-white p-3 flex justify-between items-center shadow-md">
-        <h2 className="text-lg font-bold transition-all duration-500">
-          {chatTitle}
-        </h2>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/")}
+            className="text-white hover:scale-110 transition-transform duration-200 p-1"
+          >
+            <ArrowLeft size={25} strokeWidth={2.0} />
+          </button>
+          <h2 className="text-lg font-bold transition-all duration-500">
+            {chatTitle}
+          </h2>
+        </div>
         <div className="relative">
           <button
             onClick={() => setShowMenu(!showMenu)}

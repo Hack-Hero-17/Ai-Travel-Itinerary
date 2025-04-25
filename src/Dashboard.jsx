@@ -92,7 +92,7 @@ const Dashboard = () => {
   return (
     <div className="relative min-h-screen bg-white pb-24 font-sans bg-gray-50">
       {/* Top Navbar */}
-      <div className="bg-white text-black p-4 shadow-md flex justify-between items-center">
+      <div className="sticky top-0 z-50 bg-white text-black p-4 shadow-md flex justify-between items-center">
         <div className="flex items-center gap-2">
           <img src={logo} alt="Logo" className="w-10 h-8" />
           <h1 className="text-xl font-bold font-helvetica">
@@ -101,13 +101,25 @@ const Dashboard = () => {
         </div>
 
         {/* Add Expenses Link */}
+
         <div className="flex gap-4">
-          <Link
-            to="/expenses"
-            className="text-sm font-medium text-[1rem] text-black hover:bg-gray-200 px-4 py-1.5 rounded-md font-helvetica"
-          >
-            Expenses
-          </Link>
+          {userId && (
+            <Link
+              to="/expenses"
+              className="text-sm font-medium text-[1rem] text-black hover:bg-gray-200 px-4 py-1.5 rounded-md font-helvetica"
+            >
+              Expenses
+            </Link>
+          )}
+
+          {userId && (
+            <Link
+              to="/profile"
+              className="text-sm font-medium text-[1rem] text-black hover:bg-gray-200 px-4 py-1.5 rounded-md font-helvetica"
+            >
+              Profile
+            </Link>
+          )}
 
           {/* Sign In / Logout button logic */}
           {userId ? (
@@ -201,7 +213,9 @@ const Dashboard = () => {
                     to={`/chat/${chat.chatId}`}
                     className="min-w-[200px] bg-white border rounded-lg shadow-md p-4 hover:shadow-lg transition"
                   >
-                    <h3 className="font-semibold text-lg">{chat.chatTitle}</h3>
+                    <h3 className="font-bold text-xl font-helvetica">
+                      {chat.chatTitle}
+                    </h3>
                     <p className="text-sm text-gray-600">{chat.destination}</p>
                     <div
                       className="flex flex-col gap-2 mt-4 max-h-[180px] overflow-y-auto pr-1 custom-scrollbar"
@@ -243,14 +257,16 @@ const Dashboard = () => {
       )}
 
       {/* Create Button */}
-      <button
-        onClick={() => navigate("/new")}
-        className="fixed bottom-5 right-5 flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-white rounded-xl shadow hover:bg-[#1f1f1f] transition"
-        title="Start New Chat"
-      >
-        <FaPlus className="text-sm" />
-        <span className="text-sm font-medium">Create</span>
-      </button>
+      {userId && (
+        <button
+          onClick={() => navigate("/new")}
+          className="fixed bottom-5 right-5 flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-white rounded-xl shadow hover:bg-[#1f1f1f] transition"
+          title="Start New Chat"
+        >
+          <FaPlus className="text-sm" />
+          <span className="text-sm font-medium">Create</span>
+        </button>
+      )}
     </div>
   );
 };

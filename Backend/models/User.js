@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true, // Ensure UID is unique
     },
+    username: {
+      type: String,
+      required: true,
+      unique: true, // Ensure UID is unique
+    },
     email: {
       type: String,
       required: true,
@@ -25,6 +30,10 @@ const userSchema = new mongoose.Schema(
     provider: {
       type: String, // Will be "google" for Google signups
       default: "email", // Default to email signups
+    },
+    profileImage: {
+      type: String, // Can be base64 or file URL
+      default: "", // Optional
     },
   },
   { timestamps: true }
