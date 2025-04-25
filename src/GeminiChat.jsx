@@ -21,12 +21,18 @@ const GeminiChat = () => {
   const messagesEndRef = useRef(null);
   const navigate = useNavigate(); // ← added
 
+<<<<<<< HEAD
   var userId;
   if (localStorage.getItem("userId")) {
     userId = localStorage.getItem("userId");
   } else {
     userId = sessionStorage.getItem("userId");
   }
+=======
+  const userId = "user_123"; // Replace with localStorage.getItem("userId") if available
+
+  // Handles input change for all form fields
+>>>>>>> parent of c304085 (All Pages, Authentication added)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -398,6 +404,7 @@ const GeminiChat = () => {
             type="submit"
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
             disabled={isLoading}
+
           >
             Send
           </button>

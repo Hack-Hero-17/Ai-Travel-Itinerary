@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* * {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -14,13 +14,4 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-} */
-
-/* index.css */
-/* .custom-scrollbar::-webkit-scrollbar {
-  height: 6px;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #aaa;
-  border-radius: 8px;
-} */

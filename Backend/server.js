@@ -2,22 +2,22 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
-const expenseRoutes = require("./routes/Expenses");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const bcrypt = require("bcryptjs");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use("/api/expenses", expenseRoutes);
-const User = require("./models/User");
-// const router = express.Router();
 
 // mongoose.set("debug", true);
 
 const PORT = process.env.PORT || 5000;
+<<<<<<< HEAD
 const MONGO_URI = "mongodb://127.0.0.1:27017/testdb";
 
+=======
+const MONGO_URI =
+  "mongodb+srv://vijayalakshmihariuma:KZgGotlVA5RmruHD@cluster1.gckzxwj.mongodb.net/Ai_Travel_Itinerary?appName=Cluster1";
+>>>>>>> parent of c304085 (All Pages, Authentication added)
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const genAI = new GoogleGenerativeAI("AIzaSyCLjMUX-hqIdmqsS5WP1LIS-4slLj3V6oc");
@@ -180,6 +180,7 @@ app.post("/api/chats/store", async (req, res) => {
 app.get("/api/chats/recent", async (req, res) => {
   const { userId, skip = 0, limit = 10 } = req.query;
 
+
   if (!userId) return res.status(400).json({ message: "Missing userId" });
 
   try {
@@ -191,7 +192,7 @@ app.get("/api/chats/recent", async (req, res) => {
         chatTitle: 1,
         destination: 1,
         createdAt: 1,
-        conversation: { $slice: -6 }, // last 6 messages
+        conversation: { $slice: -6 }, // last 2 messages
       }
     )
       .sort({ createdAt: -1 })
@@ -241,6 +242,7 @@ app.post("/api/chats/delete", async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 app.post("/api/user/signup", async (req, res) => {
   const {
     userId,
@@ -324,4 +326,6 @@ app.put("/api/users/:userId/profile-image", async (req, res) => {
   res.json(user);
 });
 
+=======
+>>>>>>> parent of c304085 (All Pages, Authentication added)
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
